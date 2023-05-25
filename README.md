@@ -1,3 +1,6 @@
+
+
+
 ## How to Run the Application
 To run the Tutor AI application, follow these steps:
 
@@ -41,6 +44,7 @@ Notes_Analyser (takes txt from gpt_propt_sum and saves output to Notes_Analyser_
 
 | Task | Type     | File Location                |Input                | Output              |
 | :-------- | :------- |  :------------------------- |:------------------------- |:------------------------- |
+| `Uploading` | `WEB` |  Local_Storage   |  PDF notes,pyq,syllabus         | Files stored locally |
 
 #### Heyron J Milton
 
