@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 function Anythingmore() {
   const [details, setDetails] = useState('');
@@ -11,6 +12,17 @@ function Anythingmore() {
     // Perform any necessary actions with the submitted details
     console.log('Submitted details:', details);
     // You can add additional logic here, such as making an API call to save the details
+
+    // Make API call to save the details
+    const apiUrl = 'http://192.168.137.193:8000/notestotext_anythingelse';
+    axios
+      .post(apiUrl, { details })
+      .then((response) => {
+        console.log('API response:', response);
+      })
+      .catch((error) => {
+        console.error('API error:', error);
+      });
 
     // Clear the input field after submission
     setDetails('');
@@ -25,12 +37,14 @@ function Anythingmore() {
         onChange={handleInputChange}
         placeholder="Enter details..."
       ></textarea>
+      <Link to="/dashboard">
       <button
         className="bg-violet-900 text-white py-2 px-6 rounded-lg"
         onClick={handleSubmit}
       >
         Finish
       </button>
+      </Link>
     </div>
   );
 }
