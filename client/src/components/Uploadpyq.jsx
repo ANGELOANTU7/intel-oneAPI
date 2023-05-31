@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import Lottie from 'lottie-react';
 import animationData from '../assets/101391-online-test.json';
 import { Link } from 'react-router-dom';
-
+  
 function Uploadpyq({ moduleNumber }) {
   const [numNotes, setNumNotes] = useState(0);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -34,61 +34,51 @@ function Uploadpyq({ moduleNumber }) {
 
     setUploading(true);
 
-    const promises = selectedFiles.map((file) => {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-
-        reader.onload = () => {
-          const fileContents = reader.result;
-          const blob = new Blob([fileContents], { type: file.type });
-          const filePath = `Local_Storage/notes_pdf/module_${moduleNumber}/${file.name}`;
-
-          saveFileLocally(filePath, blob)
-            .then(() => {
-              resolve();
-            })
-            .catch((error) => {
-              console.error('Error saving file:', error);
-              reject(error);
-            });
-        };
-
-        reader.readAsArrayBuffer(file);
-      });
+    const formData = new FormData();
+    selectedFiles.forEach((file) => {
+      formData.append('files', file);
     });
 
-    Promise.all(promises)
-      .then(() => {
-        setUploadSuccess(true);
-        setUploading(false);
-        setShowSuccessMessage(true);
-        setTimeout(() => {
-          setShowSuccessMessage(false);
-          setFadeOut(true); // Set fadeOut state to true after the success message
-        }, 10000); // Set timeout for 10 seconds
+    fetch('http://192.168.137.193:8000/notestotext_pyqs', {
+      method: 'POST',
+      body: formData,
+    })
+      .then((response) => {
+        if (response.ok) {
+          setUploadSuccess(true);
+          setShowSuccessMessage(true);
+          setTimeout(() => {
+            setShowSuccessMessage(false);
+            setFadeOut(true);
+          }, 10000);
+        } else {
+          throw new Error('Error uploading files');
+        }
       })
       .catch((error) => {
         console.error('Error uploading files:', error);
+      })
+      .finally(() => {
         setUploading(false);
       });
   };
 
   const saveFileLocally = (filePath, file) => {
     return new Promise((resolve, reject) => {
-      const virtualLink = document.createElement('a');
-      virtualLink.href = URL.createObjectURL(file);
-      virtualLink.download = filePath;
-      virtualLink.addEventListener('load', () => {
-        URL.revokeObjectURL(virtualLink.href);
-        resolve();
+        const virtualLink = document.createElement('a');
+        virtualLink.href = URL.createObjectURL(file);
+        virtualLink.download = filePath;
+        virtualLink.addEventListener('load', () => {
+          URL.revokeObjectURL(virtualLink.href);
+          resolve();
+        });
+        virtualLink.addEventListener('error', (error) => {
+          reject(error);
+        });
+        document.body.appendChild(virtualLink);
+        virtualLink.click();
+        document.body.removeChild(virtualLink);
       });
-      virtualLink.addEventListener('error', (error) => {
-        reject(error);
-      });
-      document.body.appendChild(virtualLink);
-      virtualLink.click();
-      document.body.removeChild(virtualLink);
-    });
   };
 
   const handleUploadAnother = () => {
@@ -119,16 +109,16 @@ function Uploadpyq({ moduleNumber }) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-screen text-center bg-gradient-to-tr from-violet-700 via-green-600 to-green-400">
+    <div className="flex flex-col items-center justify-center w-screen text-center h-screen bg-gradient-to-tr from-violet-700 via-green-600 to-green-400">
       {!fadeOut && (
         <motion.div
-          className="bg-violet-900 text-white py-6 px-6 mt-8 mb-8 rounded-lg shadow-lg justify-center items-center flex flex-col"
+          className="bg-violet-900 text-white py-6 px-6 rounded-lg shadow-lg text-center justify-center items-center flex flex-col"
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.5 }}
         >
           <Lottie animationData={animationData} style={{ width: 400, height: 300 }} />
-          <h1 className="text-3xl font-bold mb-4">Upload PYQ  {moduleNumber}</h1>
+          <h1 className="text-3xl font-bold mb-4">Upload PYQ {moduleNumber}</h1>
           {!uploadSuccess ? (
             <>
               <label htmlFor="num-notes" className="block font-medium mb-2">
@@ -154,7 +144,7 @@ function Uploadpyq({ moduleNumber }) {
               >
                 {uploading ? 'Uploaded' : 'Upload'}
               </motion.button>
-              <Link to="/uploadsyllabus" className="bg-green-500 text-white py-3 px-6 ml-4 rounded-lg mt-4">
+              <Link to="/uploadsyllabus" className="bg-green-500 text-white py-2 ml-4 px-6 mt-4 rounded-lg">
                 Next
               </Link>
             </>
@@ -175,7 +165,7 @@ function Uploadpyq({ moduleNumber }) {
               >
                 Upload Another
               </motion.button>
-              <Link to="/uploadpyq" className="text-blue-500 underline mt-4">
+              <Link to="/uploadpyq" className="text-blue-500 mt-8">
                 Next
               </Link>
             </>

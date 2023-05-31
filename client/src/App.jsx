@@ -38,7 +38,6 @@ function App() {
           <Route path="/uploadnote" element={<Uploadnote/>} />
           <Route path="/uploadpyq" element={<Uploadpyq/>} />
           <Route path="/anythingmore" element={<Anythingmore/>} />
-
           
 
         </Routes>

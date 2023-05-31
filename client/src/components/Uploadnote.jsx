@@ -119,7 +119,7 @@ function Uploadnote({ moduleNumber }) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-screen text-center h-screen bg-gradient-to-tr from-violet-700 via-green-600 to-green-400">
+    <div className="flex flex-col items-center justify-center w-screen h-screen text-center bg-gradient-to-tr from-violet-700 via-green-600 to-green-400">
       {!fadeOut && (
         <motion.div
           className="bg-violet-900 text-white py-6 px-6 rounded-lg shadow-lg text-center justify-center items-center flex flex-col"
